@@ -20,7 +20,7 @@ VALUES  ("Server", 3.25, 1),
         ("General Manager", 40, 4);
 
 INSERT INTO employees (first_name, last_name,role_id, manager_id)
-VALUES  ("Bill","Nye",13, NULL),
+VALUES  ("Bill","Nye",13, 1),
         ("Chuck","Norris",4, 1),
         ("Barak","Obama",8, 1),
         ("Stan","Smith", 1, 2),

@@ -21,34 +21,58 @@ const db = mysql2.createConnection(
     );
 
 const queryOne = 'SELECT * FROM departments';
-const queryTwo = ' SELECT r.title AS role, r.id, d.department_name AS department, r.hourly_wage FROM roles r JOIN departments d ON r.department_id = d.id;'
-const queryThree = 'SELECT e.id, e.first_name AS first, e.last_name AS last, r.title, d.department_name AS department, r.hourly_wage AS hourly, m.last_name AS manager_last_name FROM employees e LEFT JOIN employees m ON e.manager_id = m.id JOIN roles r ON e.role_id = r.id JOIN departments d ON r.department_id = d.id;'
+const queryTwo = ' SELECT r.title , r.id, d.department_name , r.hourly_wage FROM roles r JOIN departments d ON r.department_id = d.id;'
+const queryThree = 'SELECT e.id, e.first_name, e.last_name, r.title, d.department_name, r.hourly_wage, m.id FROM employees e LEFT JOIN employees m ON e.manager_id = m.id JOIN roles r ON e.role_id = r.id JOIN departments d ON r.department_id = d.id;'
 
 
-function firstQuery() {
+function showDepartments() {
     db.query(queryOne, function (err, results) {
         if (err) {
             console.error('error in query', err);
         }
-        console.log(results);
+        console.log(`\nID   | Department   |`);
+        console.log(`-----|--------------|`);
+        results.forEach(department => {
+            const departmentId = department.id.toString().padEnd(4);
+            const departmentName = department.department_name.padEnd(12);
+            console.log(`${departmentId} | ${departmentName} |`);
+        });
+        console.log(`-----|--------------|`);
     });
 };
 
-function secondQuery () {
+function showRoles () {
     db.query(queryTwo, function (err, results) {
         if (err) {
             console.error('error in query', err);
         }
-        console.log(results);
+        console.log(`\nID   | Hourly Wage | Role Title         | Department   |`);
+        console.log(`-----|-------------|--------------------|--------------|`);
+        results.forEach(role => {
+            const roleId = role.id.toString().padEnd(4);
+            const houlyWage = role.hourly_wage.padEnd(11);
+            const roleTitle = role.title.padEnd(18);
+            const department = role.department_name.padEnd(12);
+            console.log(`${roleId} | ${houlyWage} | ${roleTitle} | ${department} |`);
+        })
+        console.log(`-----|-------------|--------------------|--------------|`);
     });
 };
 
-function thirdQuery () {
+function showEmployees() {
     db.query(queryThree, function (err, results) {
         if (err) {
             console.error('error in query', err);
         }
-        console.log(results);
+        console.log(`\nID   | First Name | Last Name  |`);
+        console.log(`-----|------------|------------|`);
+        results.forEach(employee => {
+            const employeeId = employee.id.toString().padEnd(4);
+            const firstName = employee.first_name.padEnd(10);
+            const lastName = employee.last_name.padEnd(10);
+            console.log(`${employeeId} | ${firstName} | ${lastName} |`);
+        });
+        console.log(`-----|------------|------------|`);
     });
 };
 
@@ -82,15 +106,15 @@ const askUser = async () => {
     .then(answer => {
         switch (answer.selection){
             case 'View all departments':
-                firstQuery();
+                showDepartments();
                 askUser();
                 break;
             case 'View all roles':
-                secondQuery();
+                showRoles();
                 askUser();
                 break;
             case 'View all Employees':
-                thirdQuery();
+                showEmployees();
                 askUser();
                 break;
             case 'Exit':
