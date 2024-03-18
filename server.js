@@ -21,9 +21,30 @@ const db = mysql2.createConnection(
     );
 
 const queryOne = 'SELECT * FROM departments';
-const queryTwo = ' SELECT r.title , r.id, d.department_name , r.hourly_wage FROM roles r JOIN departments d ON r.department_id = d.id;'
-const queryThree = 'SELECT e.id, e.first_name, e.last_name, r.title, d.department_name, r.hourly_wage, m.id FROM employees e LEFT JOIN employees m ON e.manager_id = m.id JOIN roles r ON e.role_id = r.id JOIN departments d ON r.department_id = d.id;'
+const queryTwo = ' SELECT r.title , r.id, d.department_name , r.hourly_wage FROM roles r JOIN departments d ON r.department_id = d.id'
+const queryThree = 'SELECT e.id, e.first_name, e.last_name, r.title, d.department_name, r.hourly_wage, m.last_name AS manager_last_name FROM employees e LEFT JOIN employees m ON e.manager_id = m.id JOIN roles r ON e.role_id = r.id JOIN departments d ON r.department_id = d.id'
 
+
+function showEmployees() {
+    db.query(queryThree, function (err, results) {
+        if (err) {
+            console.error('error in query', err);
+        }
+        console.log(`\nID   | First Name | Last Name  | Role Title         | Department   | Hourly Wage | Manager |`);
+        console.log(`-----|------------|------------|--------------------|--------------|-------------|---------|`);
+        results.forEach(employee => {
+            const employeeId = employee.id.toString().padEnd(4);
+            const firstName = employee.first_name.padEnd(10);
+            const lastName = employee.last_name.padEnd(10);
+            const roleTitle = employee.title.padEnd(18);
+            const department = employee.department_name.padEnd(12);
+            const wage = employee.hourly_wage.padEnd(11);
+            const manager = employee.manager_last_name.padEnd(7);
+            console.log(`${employeeId} | ${firstName} | ${lastName} | ${roleTitle} | ${department} | ${wage} | ${manager} |`);
+        });
+        console.log(`-----|------------|------------|--------------------|--------------|-------------|---------|`);
+    });
+};
 
 function showDepartments() {
     db.query(queryOne, function (err, results) {
@@ -38,6 +59,7 @@ function showDepartments() {
             console.log(`${departmentId} | ${departmentName} |`);
         });
         console.log(`-----|--------------|`);
+        createSpace();
     });
 };
 
@@ -59,26 +81,22 @@ function showRoles () {
     });
 };
 
-function showEmployees() {
-    db.query(queryThree, function (err, results) {
+
+
+function disconnect() {
+    db.end(err => {
         if (err) {
-            console.error('error in query', err);
+            console.error('Error closing mysql connection:', err.message);
+        } else{
+            console.log('Mysql connection closed.');
         }
-        console.log(`\nID   | First Name | Last Name  |`);
-        console.log(`-----|------------|------------|`);
-        results.forEach(employee => {
-            const employeeId = employee.id.toString().padEnd(4);
-            const firstName = employee.first_name.padEnd(10);
-            const lastName = employee.last_name.padEnd(10);
-            console.log(`${employeeId} | ${firstName} | ${lastName} |`);
-        });
-        console.log(`-----|------------|------------|`);
     });
+    process.exit();
 };
 
-
-
-
+function createSpace () {
+    console.log('\n\n\n')
+}
 
 app.use((req,res) => {
     res.status(404).end();
@@ -119,6 +137,7 @@ const askUser = async () => {
                 break;
             case 'Exit':
                 console.log('exiting program');
+                disconnect();
                 return;
         }
     })
@@ -127,3 +146,4 @@ const askUser = async () => {
 
 
 askUser();
+

@@ -23,6 +23,7 @@ INSERT INTO employees (first_name, last_name,role_id, manager_id)
 VALUES  ("Bill","Nye",13, 1),
         ("Chuck","Norris",4, 1),
         ("Barak","Obama",8, 1),
+        ("Sadie","Hawkins",11, 1),
         ("Stan","Smith", 1, 2),
         ("Jannet","Michaels",1, 2),
         ("Joey","Juarez",1, 2),
@@ -36,10 +37,9 @@ VALUES  ("Bill","Nye",13, 1),
         ("George","Georgina",6, 3),
         ("Kyle","Estell",6, 3),
         ("Chad","Chadwicks",7, 3),
-        ("Kenedy","Smith",9, 3),
-        ("Bob","Murray",10, 3),
-        ("Ryan","Reynolds",10, 3),
-        ("Sadie","Hawkins",11, 3),
+        ("Kenedy","Smith",9, 4),
+        ("Bob","Murray",10, 4),
+        ("Ryan","Reynolds",10, 4),
         ("Jet","Lee",12, 3);
 
 
