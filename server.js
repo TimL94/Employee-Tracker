@@ -81,6 +81,73 @@ function showRoles () {
     });
 };
 
+const addDepartment = async () => {
+    createSpace();
+    const departmentData = await inquirer.prompt([
+        {
+            type: 'input',
+            name: 'department',
+            message: 'Enter department name: '
+        }
+    ]);
+
+    await db.promise().query('INSERT INTO departments (department_name) VALUES (?)', departmentData.department);
+    createSpace();
+    askUser();
+}
+
+const addEmployee = async () => {
+    const [roles] = await db.promise().query('SELECT title FROM roles');
+    const roleChoices = roles.map(role => role.title);
+
+    const employeeData = await inquirer.prompt([
+        {
+            type: 'input',
+            name:'first_name',
+            message: 'Enter employee Frist Name:',
+        },
+        {
+            type: 'input',
+            name: 'last_name',
+            message: 'Enter employee Last Name:'
+        },
+        {
+            type: 'list',
+            name: 'role_title',
+            message: 'choose a role',
+            choices: roleChoices
+        },
+        {
+            type: 'list',
+            name: 'manager',
+            choices: [
+                'Norris',
+                'Obama',
+                'Hawkins',
+                'None'
+            ]
+        }
+    ]);
+    var managerId = 0;
+
+    if (employeeData.manager === 'Norris'){
+        managerId = 2;
+    } else if (employeeData.manager === 'Obama') {
+        managerId = 3;
+    } else if (employeeData.manager === 'Hawkins') {
+        managerId = 4;
+    } else {
+        managerId = 1;
+    };
+
+    const roleIdQuery = await db.promise().query('SELECT id FROM roles WHERE title = ?', employeeData.role_title);
+    const roleId = roleIdQuery[0][0].id;
+
+    await db.promise().query('INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)', [employeeData.first_name, employeeData.last_name, roleId, managerId]);
+
+    console.log('Employee added successfully.');
+    return askUser();
+}
 
 
 function disconnect() {
@@ -115,8 +182,11 @@ const askUser = async () => {
             message: 'Select an option below',
             choices: [
                 'View all departments',
+                'Add department',
                 'View all roles',
+                'Add role',
                 'View all Employees',
+                'Add Employee',
                 'Exit'
             ]
         }
@@ -127,6 +197,10 @@ const askUser = async () => {
                 showDepartments();
                 askUser();
                 break;
+            case 'Add department':
+                addDepartment();
+                askUser();
+                break;
             case 'View all roles':
                 showRoles();
                 askUser();
@@ -134,6 +208,9 @@ const askUser = async () => {
             case 'View all Employees':
                 showEmployees();
                 askUser();
+                break;
+            case 'Add Employee':
+                addEmployee();
                 break;
             case 'Exit':
                 console.log('exiting program');
