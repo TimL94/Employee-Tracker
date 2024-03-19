@@ -190,11 +190,43 @@ const addEmployee = async () => {
     const roleIdQuery = await db.promise().query('SELECT id FROM roles WHERE title = ?', employeeData.role_title);
     const roleId = roleIdQuery[0][0].id;
 
-    await db.promise().query('INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)', [employeeData.first_name, employeeData.last_name, roleId, managerId]);
+    await db.promise().query('INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)', [employeeData.first_name, 'employeeData.last_name, roleId, managerId']);
 
     console.log('Employee added successfully.');
     return askUser();
 }
+
+const updateEmployeeRole = async () => {
+    const [employees] = await db.promise().query('SELECT id, first_name, last_name from employees');
+    const employeeChoices = employees.map(employee => `${employee.first_name} ${employee.last_name}`);
+    const [roles] = await db.promise().query('SELECT title FROM roles');
+    const roleChoices = roles.map(role => role.title);
+    console.log(employeeChoices);
+
+    const employeeRoleData = await inquirer.prompt([
+        {
+            type: 'list',
+            name: 'employee',
+            message: 'choose an employee to update',
+            choices: employeeChoices
+        },
+        {
+            type: 'list',
+            name: 'new_role',
+            message: 'Select new role',
+            choices: roleChoices
+        }
+
+    ]);
+    const roleIdQuery = await db.promise().query('SELECT id FROM roles WHERE title = ?', employeeRoleData.new_role);
+    const roleId = roleIdQuery[0][0].id;
+    const employeeFirstName = employeeRoleData.employee.split(' ')[0];
+    const employeeLastName = employeeRoleData.employee.split(' ')[1];
+
+    await db.promise().query('UPDATE employees SET role_id = ? where first_name = ? AND last_name = ?', [roleId, employeeFirstName, employeeLastName]);
+    askUser();
+
+};
 
 
 function disconnect() {
@@ -234,6 +266,7 @@ const askUser = async () => {
                 'Add role',
                 'View all Employees',
                 'Add Employee',
+                'Update employee role',
                 'Exit'
             ]
         }
@@ -257,6 +290,9 @@ const askUser = async () => {
                 break;
             case 'Add Employee':
                 addEmployee();
+                break;
+            case 'Update employee role':
+                updateEmployeeRole();
                 break;
             case 'Exit':
                 console.log('exiting program');
