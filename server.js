@@ -44,6 +44,7 @@ function showEmployees() {
         });
         console.log(`-----|------------|------------|--------------------|--------------|-------------|---------|`);
     });
+    askUser();
 };
 
 function showDepartments() {
@@ -61,6 +62,7 @@ function showDepartments() {
         console.log(`-----|--------------|`);
         createSpace();
     });
+    askUser();
 };
 
 function showRoles () {
@@ -79,7 +81,52 @@ function showRoles () {
         })
         console.log(`-----|-------------|--------------------|--------------|`);
     });
+    askUser();
 };
+
+const addRole = async () => {
+    const [departments] = await db.promise().query('SELECT department_name FROM departments');
+    const departmentChoices = departments.map(department => department.department_name);
+
+    const roleData = await inquirer.prompt([
+        {
+            type: 'input',
+            name: 'role_title',
+            message: 'Enter role title: ',
+        },
+        {
+            type: 'input',
+            name: 'hourly_wage',
+            message: 'Enter houlry wage: ',
+            validate: validateNumber
+        },
+        {
+            type: 'list',
+            name: 'department',
+            message: 'Choose department',
+            choices: departmentChoices
+        }
+
+    ]);
+
+    const departmentIdQuery = await db.promise().query('SELECT id FROM departments WHERE department_name = ?', roleData.department);
+    const departmentId = departmentIdQuery[0][0].id;
+
+    await db.promise().query('INSERT INTO roles (title, hourly_wage, department_id) VALUES (?, ?,?)', [roleData.role_title, roleData.hourly_wage, departmentId]);
+    askUser();
+
+};  
+
+const validateNumber = input => {
+    const number = Number(input);
+    if(Number.isInteger(number)) {
+        return true;
+    }else {
+        return "Please enter a valid number";
+    }
+}
+
+
 
 const addDepartment = async () => {
     createSpace();
@@ -179,7 +226,7 @@ const askUser = async () => {
         {
             type: 'list',
             name: 'selection',
-            message: 'Select an option below',
+            message: '\nSelect an option below',
             choices: [
                 'View all departments',
                 'Add department',
@@ -195,19 +242,18 @@ const askUser = async () => {
         switch (answer.selection){
             case 'View all departments':
                 showDepartments();
-                askUser();
                 break;
             case 'Add department':
                 addDepartment();
-                askUser();
                 break;
             case 'View all roles':
                 showRoles();
-                askUser();
+                break;
+            case 'Add role':
+                addRole();
                 break;
             case 'View all Employees':
                 showEmployees();
-                askUser();
                 break;
             case 'Add Employee':
                 addEmployee();
