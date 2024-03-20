@@ -24,9 +24,9 @@ function showEmployees(db, main, clear, bannerMessage) {
             const lastName = employee.last_name.padEnd(10);
             const roleTitle = employee.title.padEnd(18);
             const department = employee.department_name.padEnd(12);
-            const wage = employee.hourly_wage.padEnd(11);
+            const wage = employee.hourly_wage.padEnd(10);
             const manager = employee.manager_last_name.padEnd(7);
-            console.log(`| ${employeeId} | ${firstName} | ${lastName} | ${roleTitle} | ${department} | ${wage} | ${manager} |`);
+            console.log(`| ${employeeId} | ${firstName} | ${lastName} | ${roleTitle} | ${department} | $${wage} | ${manager} |`);
         });
         console.log(`|------|------------|------------|--------------------|--------------|-------------|---------|`);
         bannerMessage();
@@ -91,7 +91,7 @@ const addEmployee = async (db, main, clear) => {
 
 
 const updateEmployeeRole = async (db, main, clear) => {
-    const [employees] = await db.promise().query('SELECT id, first_name, last_name from employees');
+    const [employees] = await db.promise().query('SELECT first_name, last_name from employees');
     const employeeChoices = employees.map(employee => `${employee.first_name} ${employee.last_name}`);
     const [roles] = await db.promise().query('SELECT title FROM roles');
     const roleChoices = roles.map(role => role.title);
