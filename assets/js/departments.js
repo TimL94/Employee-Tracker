@@ -7,14 +7,15 @@ function showDepartments(db, main, clear, bannerMessage) {
         if (err) {
             console.error('error in query', err);
         }
-        console.log(`\nID   | Department   |`);
-        console.log(`-----|--------------|`);
+        console.log(`\n|------|--------------|`);
+        console.log(`| ID   | Department   |`);
+        console.log(`|------|--------------|`);
         results.forEach(department => {
             const departmentId = department.id.toString().padEnd(4);
             const departmentName = department.department_name.padEnd(12);
-            console.log(`${departmentId} | ${departmentName} |`);
+            console.log(`| ${departmentId} | ${departmentName} |`);
         });
-        console.log(`-----|--------------|`);
+        console.log(`|------|--------------|`);
         bannerMessage();
     });
     

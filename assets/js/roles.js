@@ -13,16 +13,17 @@ function showRoles (db, main, clear, bannerMessage) {
         if (err) {
             console.error('error in query', err);
         }
-        console.log(`\nID   | Hourly Wage | Role Title         | Department   |`);
-        console.log(`-----|-------------|--------------------|--------------|`);
+        console.log(`\n|------|-------------|--------------------|--------------|`);
+        console.log(`| ID   | Hourly Wage | Role Title         | Department   |`);
+        console.log(`|------|-------------|--------------------|--------------|`);
         results.forEach(role => {
             const roleId = role.id.toString().padEnd(4);
             const houlyWage = role.hourly_wage.padEnd(11);
             const roleTitle = role.title.padEnd(18);
             const department = role.department_name.padEnd(12);
-            console.log(`${roleId} | ${houlyWage} | ${roleTitle} | ${department} |`);
+            console.log(`| ${roleId} | ${houlyWage} | ${roleTitle} | ${department} |`);
         })
-        console.log(`-----|-------------|--------------------|--------------|`);
+        console.log(`|------|-------------|--------------------|--------------|`);
         bannerMessage();
         
     });

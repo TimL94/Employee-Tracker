@@ -32,6 +32,7 @@ function disconnect() {
             console.error('Error closing mysql connection:', err.message);
         } else{
             console.log('Mysql connection closed.');
+            console.log('exiting program');
         }
     });
     process.exit();
@@ -98,7 +99,6 @@ const main = async () => {
                 updateEmployeeRole(db, main, clear);
                 break;
             case 'Exit':
-                console.log('exiting program');
                 disconnect();
                 return;
         }

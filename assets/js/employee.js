@@ -15,8 +15,9 @@ function showEmployees(db, main, clear, bannerMessage) {
         if (err) {
             console.error('error in query', err);
         }
-        console.log(`\nID   | First Name | Last Name  | Role Title         | Department   | Hourly Wage | Manager |`);
-        console.log(`-----|------------|------------|--------------------|--------------|-------------|---------|`);
+        console.log(`\n|------|------------|------------|--------------------|--------------|-------------|---------|`);
+        console.log(`| ID   | First Name | Last Name  | Role Title         | Department   | Hourly Wage | Manager |`);
+        console.log(`|------|------------|------------|--------------------|--------------|-------------|---------|`);
         results.forEach(employee => {
             const employeeId = employee.id.toString().padEnd(4);
             const firstName = employee.first_name.padEnd(10);
@@ -25,9 +26,9 @@ function showEmployees(db, main, clear, bannerMessage) {
             const department = employee.department_name.padEnd(12);
             const wage = employee.hourly_wage.padEnd(11);
             const manager = employee.manager_last_name.padEnd(7);
-            console.log(`${employeeId} | ${firstName} | ${lastName} | ${roleTitle} | ${department} | ${wage} | ${manager} |`);
+            console.log(`| ${employeeId} | ${firstName} | ${lastName} | ${roleTitle} | ${department} | ${wage} | ${manager} |`);
         });
-        console.log(`-----|------------|------------|--------------------|--------------|-------------|---------|`);
+        console.log(`|------|------------|------------|--------------------|--------------|-------------|---------|`);
         bannerMessage();
     });
     main();
