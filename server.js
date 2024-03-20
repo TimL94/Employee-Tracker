@@ -1,7 +1,7 @@
-
 const express = require('express');
 const mysql2 = require('mysql2');
 const inquirer = require('inquirer');
+const clear = require('clear');
 const {showDepartments, addDepartment} = require('./assets/js/departments');
 const {showRoles, addRole} = require('./assets/js/roles');
 const { showEmployees, addEmployee, updateEmployeeRole } = require('./assets/js/employee');
@@ -26,6 +26,7 @@ const db = mysql2.createConnection(
 
 
 function disconnect() {
+    clear();
     db.end(err => {
         if (err) {
             console.error('Error closing mysql connection:', err.message);
@@ -36,12 +37,11 @@ function disconnect() {
     process.exit();
 };
 
-
-function createSpace () {
-    console.log('\n\n\n')
-}
-
-
+function bannerMessage () {
+    console.log('\n------------------------------------------')
+        console.log('### PRESS ARROW KEY TO BRING MENU BACK ###');
+        console.log('------------------------------------------\n')
+};
 
 app.use((req,res) => {
     res.status(404).end();
@@ -52,9 +52,11 @@ app.listen(PORT, () => {
 });
 
 
-
-
-const askUser = async () => {
+const main = async () => {
+    clear();
+    console.log('------------------------');
+    console.log('Employee Management System');
+    console.log('------------------------');
     const selection = await inquirer.prompt([
         {
             type: 'list',
@@ -75,25 +77,25 @@ const askUser = async () => {
     .then(answer => {
         switch (answer.selection){
             case 'View all departments':
-                showDepartments(db, askUser);
+                showDepartments(db, main, clear, bannerMessage);
                 break;
             case 'Add department':
-                addDepartment(db, askUser, createSpace);
+                addDepartment(db, main, clear);
                 break;
             case 'View all roles':
-                showRoles(db, askUser);
+                showRoles(db, main, clear, bannerMessage);
                 break;
             case 'Add role':
-                addRole(db, askUser);
+                addRole(db, main, clear);
                 break;
             case 'View all Employees':
-                showEmployees(db, askUser);
+                showEmployees(db, main, clear, bannerMessage);
                 break;
             case 'Add Employee':
-                addEmployee(db, askUser);
+                addEmployee(db, main, clear);
                 break;
             case 'Update employee role':
-                updateEmployeeRole(db, askUser);
+                updateEmployeeRole(db, main, clear);
                 break;
             case 'Exit':
                 console.log('exiting program');
@@ -105,6 +107,6 @@ const askUser = async () => {
 }
 
 
-askUser();
+main();
 
 

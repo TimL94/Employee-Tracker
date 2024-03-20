@@ -1,8 +1,15 @@
 const inquirer = require('inquirer');
 
-function showRoles (db, askUser) {
-    const roleQuery = ' SELECT r.title , r.id, d.department_name , r.hourly_wage FROM roles r JOIN departments d ON r.department_id = d.id'
+function showRoles (db, main, clear, bannerMessage) {
+    
+    const roleQuery = `
+    SELECT r.title , r.id, d.department_name , r.hourly_wage 
+    FROM roles r 
+    JOIN departments d ON r.department_id = d.id`;
+    clear()
+
     db.query(roleQuery, function (err, results) {
+        clear();
         if (err) {
             console.error('error in query', err);
         }
@@ -16,13 +23,16 @@ function showRoles (db, askUser) {
             console.log(`${roleId} | ${houlyWage} | ${roleTitle} | ${department} |`);
         })
         console.log(`-----|-------------|--------------------|--------------|`);
+        bannerMessage();
+        
     });
-    askUser();
+    main();
 };
 
-const addRole = async (db, askUser) => {
+const addRole = async (db, main, clear) => {
     const [departments] = await db.promise().query('SELECT department_name FROM departments');
     const departmentChoices = departments.map(department => department.department_name);
+    clear()
 
     const roleData = await inquirer.prompt([
         {
@@ -49,7 +59,7 @@ const addRole = async (db, askUser) => {
     const departmentId = departmentIdQuery[0][0].id;
 
     await db.promise().query('INSERT INTO roles (title, hourly_wage, department_id) VALUES (?, ?,?)', [roleData.role_title, roleData.hourly_wage, departmentId]);
-    askUser();
+    main();
 
 };
 

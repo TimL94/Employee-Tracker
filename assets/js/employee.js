@@ -1,10 +1,17 @@
 const inquirer = require('inquirer');
 
 
-function showEmployees(db, askUser) {
-    const employeeQuery = 'SELECT e.id, e.first_name, e.last_name, r.title, d.department_name, r.hourly_wage, m.last_name AS manager_last_name FROM employees e LEFT JOIN employees m ON e.manager_id = m.id JOIN roles r ON e.role_id = r.id JOIN departments d ON r.department_id = d.id'
+function showEmployees(db, main, clear, bannerMessage) {
+
+    const employeeQuery = `
+    SELECT e.id, e.first_name, e.last_name, r.title, d.department_name, r.hourly_wage, m.last_name AS manager_last_name
+    FROM employees e 
+    LEFT JOIN employees m ON e.manager_id = m.id
+    JOIN roles r ON e.role_id = r.id
+    JOIN departments d ON r.department_id = d.id`
 
     db.query(employeeQuery, function (err, results) {
+        clear();
         if (err) {
             console.error('error in query', err);
         }
@@ -21,14 +28,16 @@ function showEmployees(db, askUser) {
             console.log(`${employeeId} | ${firstName} | ${lastName} | ${roleTitle} | ${department} | ${wage} | ${manager} |`);
         });
         console.log(`-----|------------|------------|--------------------|--------------|-------------|---------|`);
+        bannerMessage();
     });
-    askUser();
+    main();
 };
 
 
-const addEmployee = async (db, askUser) => {
+const addEmployee = async (db, main, clear) => {
     const [roles] = await db.promise().query('SELECT title FROM roles');
     const roleChoices = roles.map(role => role.title);
+    clear();
 
     const employeeData = await inquirer.prompt([
         {
@@ -76,16 +85,16 @@ const addEmployee = async (db, askUser) => {
     await db.promise().query('INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)', [employeeData.first_name, employeeData.last_name, roleId, managerId]);
 
     console.log('Employee added successfully.');
-    return askUser();
+    return main();
 }
 
 
-const updateEmployeeRole = async (db, askUser) => {
+const updateEmployeeRole = async (db, main, clear) => {
     const [employees] = await db.promise().query('SELECT id, first_name, last_name from employees');
     const employeeChoices = employees.map(employee => `${employee.first_name} ${employee.last_name}`);
     const [roles] = await db.promise().query('SELECT title FROM roles');
     const roleChoices = roles.map(role => role.title);
-    console.log(employeeChoices);
+    clear();
 
     const employeeRoleData = await inquirer.prompt([
         {
@@ -108,7 +117,8 @@ const updateEmployeeRole = async (db, askUser) => {
     const employeeLastName = employeeRoleData.employee.split(' ')[1];
 
     await db.promise().query('UPDATE employees SET role_id = ? where first_name = ? AND last_name = ?', [roleId, employeeFirstName, employeeLastName]);
-    askUser();
+
+    main();
 
 };
 

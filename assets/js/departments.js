@@ -1,8 +1,9 @@
 const inquirer =  require('inquirer');
 
-function showDepartments(db, askUser) {
+function showDepartments(db, main, clear, bannerMessage) {
     const departmentQuery = 'SELECT * FROM departments';
     db.query(departmentQuery, function (err, results) {
+        clear();
         if (err) {
             console.error('error in query', err);
         }
@@ -14,12 +15,14 @@ function showDepartments(db, askUser) {
             console.log(`${departmentId} | ${departmentName} |`);
         });
         console.log(`-----|--------------|`);
+        bannerMessage();
     });
-    askUser();
+    
+    main();
 };
 
-const addDepartment = async (db, askUser, createSpace) => {
-    createSpace();
+const addDepartment = async (db, main, clear) => {
+    clear();
     const departmentData = await inquirer.prompt([
         {
             type: 'input',
@@ -29,8 +32,7 @@ const addDepartment = async (db, askUser, createSpace) => {
     ]);
 
     await db.promise().query('INSERT INTO departments (department_name) VALUES (?)', departmentData.department);
-    createSpace();
-    askUser();
+    main();
 }
 
 
