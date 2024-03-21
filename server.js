@@ -2,13 +2,13 @@ const express = require('express');
 const mysql2 = require('mysql2');
 const inquirer = require('inquirer');
 const clear = require('clear');
-const {showDepartments, addDepartment} = require('./assets/js/departments');
+const {showDepartments, addDepartment, showEmployeeByDepartment} = require('./assets/js/departments');
 const {showRoles, addRole} = require('./assets/js/roles');
-const { showEmployees, addEmployee, updateEmployeeRole } = require('./assets/js/employee');
+const { showEmployees, addEmployee, updateEmployeeRole, updateEmployeeManager } = require('./assets/js/employee');
 
 
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 const app = express();
 
 app.use(express.urlencoded({extended: false}));
@@ -65,12 +65,14 @@ const main = async () => {
             message: '\nSelect an option below',
             choices: [
                 'View all departments',
+                'View all employees by department',
                 'Add department',
                 'View all roles',
                 'Add role',
                 'View all Employees',
                 'Add Employee',
                 'Update employee role',
+                'Update employee manager',
                 'Exit'
             ]
         }
@@ -79,6 +81,9 @@ const main = async () => {
         switch (answer.selection){
             case 'View all departments':
                 showDepartments(db, main, clear, bannerMessage);
+                break;
+            case 'View all employees by department':
+                showEmployeeByDepartment(db, main, clear, bannerMessage);
                 break;
             case 'Add department':
                 addDepartment(db, main, clear);
@@ -97,6 +102,9 @@ const main = async () => {
                 break;
             case 'Update employee role':
                 updateEmployeeRole(db, main, clear);
+                break;
+            case 'Update employee manager':
+                updateEmployeeManager(db, main, clear);
                 break;
             case 'Exit':
                 disconnect();

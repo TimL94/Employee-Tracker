@@ -123,5 +123,38 @@ const updateEmployeeRole = async (db, main, clear) => {
 
 };
 
+const updateEmployeeManager = async (db, main, clear) => {
+    const [employees] = await db.promise().query('SELECT first_name, last_name from employees');
+    const employeeChoices = employees.map(employee => `${employee.first_name} ${employee.last_name}`);
+    clear();
 
-module.exports = {showEmployees, addEmployee, updateEmployeeRole};
+    const newManagerData = await inquirer.prompt([
+        {
+            type: 'list',
+            name: 'employee_name',
+            message: 'select employee to update',
+            choices: employeeChoices
+        },
+        {
+            type: 'list',
+            name: 'managers',
+            message:'select new manager',
+            choices: employeeChoices
+        }
+    ]);
+
+    const managerFirstName = newManagerData.managers.split(' ')[0];
+    const managerLasttName = newManagerData.managers.split(' ')[1];
+    const employeeFirstName = newManagerData.employee_name.split(' ')[0];
+    const employeeLastName = newManagerData.employee_name.split(' ')[1];
+
+    const managerIdQuery = await db.promise().query('SELECT id FROM employees WHERE first_name = ? AND last_name = ?', [managerFirstName, managerLasttName]);
+    const managerId = managerIdQuery[0][0].id;
+
+    await db.promise().query('UPDATE employees SET manager_id = ? WHERE first_name = ? AND last_name = ?', [managerId, employeeFirstName, employeeLastName]);
+
+    main();
+}
+
+
+module.exports = {showEmployees, addEmployee, updateEmployeeRole, updateEmployeeManager};

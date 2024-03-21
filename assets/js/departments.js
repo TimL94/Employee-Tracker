@@ -22,7 +22,7 @@ function showDepartments(db, main, clear, bannerMessage) {
     main();
 };
 
-const addDepartment = async (db, main, clear) => {
+const addDepartment = async (db, main, clear, bannerMessage) => {
     clear();
     const departmentData = await inquirer.prompt([
         {
@@ -36,5 +36,33 @@ const addDepartment = async (db, main, clear) => {
     main();
 }
 
+const showEmployeeByDepartment = async (db, main, clear, bannerMessage) => {
+    const employeeDepartmentQuery = `
+    SELECT e.first_name, e.last_name, d.department_name
+    FROM employees e
+    JOIN roles r ON e.role_id = r.id
+    JOIN departments d on r.department_id = d.id;`;
+    
+    db.query(employeeDepartmentQuery, function (err, results) {
+        clear();
+        if (err) {
+            console.error('Error in query', err);
+        }
+        console.log('|------------|------------|--------------|');
+        console.log('| First Name | Last Name  | Department   |');
+        console.log('|------------|------------|--------------|');
+        results.forEach(employee => {
+            const firstName = employee.first_name.padEnd(10);
+            const lastName = employee.last_name.padEnd(10);
+            const department = employee.department_name.padEnd(12);
+            console.log(`| ${firstName} | ${lastName} | ${department} |`);
+        });
+        console.log('|------------|------------|--------------|');
+        bannerMessage();
+    });
+    main();
+    
 
-module.exports = {showDepartments, addDepartment};
+};
+
+module.exports = {showDepartments, addDepartment, showEmployeeByDepartment};
