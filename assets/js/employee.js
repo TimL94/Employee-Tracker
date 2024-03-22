@@ -132,6 +132,8 @@ const updateEmployeeRole = async (db, main, clear) => {
 const updateEmployeeManager = async (db, main, clear) => {
     const [employees] = await db.promise().query('SELECT first_name, last_name from employees');
     const employeeChoices = employees.map(employee => `${employee.first_name} ${employee.last_name}`);
+    const employeeManagerChoices = employees.map(employee => `${employee.first_name} ${employee.last_name}`);
+    employeeManagerChoices.push('None');
     clear();
 
     const newManagerData = await inquirer.prompt([
@@ -145,19 +147,24 @@ const updateEmployeeManager = async (db, main, clear) => {
             type: 'list',
             name: 'managers',
             message:'select new manager',
-            choices: employeeChoices
+            choices: employeeManagerChoices
         }
     ]);
-
-    const managerFirstName = newManagerData.managers.split(' ')[0];
-    const managerLasttName = newManagerData.managers.split(' ')[1];
+ 
     const employeeFirstName = newManagerData.employee_name.split(' ')[0];
     const employeeLastName = newManagerData.employee_name.split(' ')[1];
 
-    const managerIdQuery = await db.promise().query('SELECT id FROM employees WHERE first_name = ? AND last_name = ?', [managerFirstName, managerLasttName]);
-    const managerId = managerIdQuery[0][0].id;
+    if (newManagerData.managers === 'None'){
+        await db.promise().query('UPDATE employees SET manager_id = NULL WHERE first_name = ? AND last_name = ?', [employeeFirstName, employeeLastName]);
+    } else {
+        const managerFirstName = newManagerData.managers.split(' ')[0];
+        const managerLasttName = newManagerData.managers.split(' ')[1];
 
-    await db.promise().query('UPDATE employees SET manager_id = ? WHERE first_name = ? AND last_name = ?', [managerId, employeeFirstName, employeeLastName]);
+        const managerIdQuery = await db.promise().query('SELECT id FROM employees WHERE first_name = ? AND last_name = ?', [managerFirstName, managerLasttName]);
+        const managerId = managerIdQuery[0][0].id;
+
+        await db.promise().query('UPDATE employees SET manager_id = ? WHERE first_name = ? AND last_name = ?', [managerId, employeeFirstName, employeeLastName]);
+    };
 
     main();
 }
