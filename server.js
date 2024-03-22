@@ -58,7 +58,7 @@ const main = async () => {
     console.log('------------------------');
     console.log('Employee Management System');
     console.log('------------------------');
-    const selection = await inquirer.prompt([
+    await inquirer.prompt([
         {
             type: 'list',
             name: 'selection',

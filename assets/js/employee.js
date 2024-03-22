@@ -25,7 +25,13 @@ function showEmployees(db, main, clear, bannerMessage) {
             const roleTitle = employee.title.padEnd(18);
             const department = employee.department_name.padEnd(12);
             const wage = employee.hourly_wage.padEnd(10);
-            const manager = employee.manager_last_name.padEnd(7);
+            var manager = '';
+            if (!employee.manager_last_name){
+                manager = 'none'.padEnd(7);
+            } else if (employee.manager_last_name){
+                manager = employee.manager_last_name.padEnd(7);
+            }
+            
             console.log(`| ${employeeId} | ${firstName} | ${lastName} | ${roleTitle} | ${department} | $${wage} | ${manager} |`);
         });
         console.log(`+------+------------+------------+--------------------+--------------+-------------+---------+`);
@@ -68,7 +74,7 @@ const addEmployee = async (db, main, clear) => {
             ]
         }
     ]);
-    var managerId = 0;
+    var managerId = 1;
 
     if (employeeData.manager === 'Norris'){
         managerId = 2;
@@ -76,8 +82,8 @@ const addEmployee = async (db, main, clear) => {
         managerId = 3;
     } else if (employeeData.manager === 'Hawkins') {
         managerId = 4;
-    } else {
-        managerId = 1;
+    } else if (employeeData.manager === 'None'){
+        managerId = null;
     };
 
     const roleIdQuery = await db.promise().query('SELECT id FROM roles WHERE title = ?', employeeData.role_title);
