@@ -7,22 +7,22 @@ function showDepartments(db, main, clear, bannerMessage) {
         if (err) {
             console.error('error in query', err);
         }
-        console.log(`\n|------|--------------|`);
+        console.log(`\n+------+--------------+`);
         console.log(`| ID   | Department   |`);
-        console.log(`|------|--------------|`);
+        console.log(`+------+--------------+`);
         results.forEach(department => {
             const departmentId = department.id.toString().padEnd(4);
             const departmentName = department.department_name.padEnd(12);
             console.log(`| ${departmentId} | ${departmentName} |`);
         });
-        console.log(`|------|--------------|`);
+        console.log(`+------+--------------+`);
         bannerMessage();
     });
     
     main();
 };
 
-const addDepartment = async (db, main, clear, bannerMessage) => {
+const addDepartment = async (db, main, clear) => {
     clear();
     const departmentData = await inquirer.prompt([
         {
@@ -41,28 +41,53 @@ const showEmployeeByDepartment = async (db, main, clear, bannerMessage) => {
     SELECT e.first_name, e.last_name, d.department_name
     FROM employees e
     JOIN roles r ON e.role_id = r.id
-    JOIN departments d on r.department_id = d.id;`;
+    JOIN departments d on r.department_id = d.id`;
     
     db.query(employeeDepartmentQuery, function (err, results) {
         clear();
         if (err) {
-            console.error('Error in query', err);
+            console.error('Error in query: ', err);
         }
-        console.log('|------------|------------|--------------|');
+        console.log('+------------+------------+--------------+');
         console.log('| First Name | Last Name  | Department   |');
-        console.log('|------------|------------|--------------|');
+        console.log('+------------+------------+--------------+');
         results.forEach(employee => {
             const firstName = employee.first_name.padEnd(10);
             const lastName = employee.last_name.padEnd(10);
             const department = employee.department_name.padEnd(12);
             console.log(`| ${firstName} | ${lastName} | ${department} |`);
         });
-        console.log('|------------|------------|--------------|');
+        console.log('+------------+------------+--------------+');
         bannerMessage();
     });
     main();
-    
-
 };
 
-module.exports = {showDepartments, addDepartment, showEmployeeByDepartment};
+const sumHourlyByDepartment = async (db, main, clear, bannerMessage) => {
+    clear();
+    const sumQuery = `
+    SELECT d.department_name, SUM(r.hourly_wage) AS total_hourly
+    FROM employees e
+    JOIN roles r ON e.role_id = r.id
+    JOIN departments d on r.department_id = d.id
+    GROUP BY d.department_name`;
+
+    db.query(sumQuery, function (err, results) {
+        if (err) {
+            console.error('Error in query: ', err)
+        }
+        console.log('\n+--------------+-------------+');
+        console.log('| Departmenmt | Total Hourly |');
+        console.log('+--------------+-------------+');
+        results.forEach(department => {
+            const totalHourly = department.total_hourly.padEnd(10);
+            const departmentName = department.department_name.padEnd(12);
+            console.log(`| ${departmentName} | $${totalHourly} |`)
+        });
+        console.log('+--------------+-------------+');
+        bannerMessage();
+    })
+    main();
+}
+
+module.exports = {showDepartments, addDepartment, showEmployeeByDepartment, sumHourlyByDepartment};

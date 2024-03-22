@@ -16,3 +16,10 @@ SELECT e.first_name, e.last_name, d.department_name
 FROM employees e
 JOIN roles r ON e.role_id = r.id
 JOIN departments d on r.department_id = d.id;
+
+
+SELECT d.department_name, SUM(r.hourly_wage) AS total_hourly
+FROM employees e
+JOIN roles r ON e.role_id = r.id
+JOIN departments d on r.department_id = d.id
+GROUP BY d.department_name;

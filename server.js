@@ -2,7 +2,7 @@ const express = require('express');
 const mysql2 = require('mysql2');
 const inquirer = require('inquirer');
 const clear = require('clear');
-const {showDepartments, addDepartment, showEmployeeByDepartment} = require('./assets/js/departments');
+const {showDepartments, addDepartment, showEmployeeByDepartment, sumHourlyByDepartment} = require('./assets/js/departments');
 const {showRoles, addRole} = require('./assets/js/roles');
 const { showEmployees, addEmployee, updateEmployeeRole, updateEmployeeManager } = require('./assets/js/employee');
 
@@ -66,6 +66,7 @@ const main = async () => {
             choices: [
                 'View all departments',
                 'View all employees by department',
+                'View total hourly by department',
                 'Add department',
                 'View all roles',
                 'Add role',
@@ -84,6 +85,9 @@ const main = async () => {
                 break;
             case 'View all employees by department':
                 showEmployeeByDepartment(db, main, clear, bannerMessage);
+                break;
+            case 'View total hourly by department':
+                sumHourlyByDepartment(db, clear, main, bannerMessage);
                 break;
             case 'Add department':
                 addDepartment(db, main, clear);
