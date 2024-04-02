@@ -2,8 +2,8 @@ const express = require('express');
 const mysql2 = require('mysql2');
 const inquirer = require('inquirer');
 const clear = require('clear');
-const {showDepartments, addDepartment, showEmployeeByDepartment, sumHourlyByDepartment} = require('./assets/js/departments');
-const {showRoles, addRole} = require('./assets/js/roles');
+const { showDepartments, addDepartment, showEmployeeByDepartment, sumHourlyByDepartment } = require('./assets/js/departments');
+const { showRoles, addRole } = require('./assets/js/roles');
 const { showEmployees, addEmployee, updateEmployeeRole, updateEmployeeManager } = require('./assets/js/employee');
 
 
