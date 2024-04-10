@@ -28,7 +28,7 @@
 
     user must navigate to the correct file location and run "npm i -y" to instal necessary dependencies. user must than create the database by typing "mysql -u root -p" followed by the system password. within the database cli the user must than run  'assets/db/schema.sql' followed by "assets/db/seeds.sql" to create and seed the database. the user must than type "quit" to exit the database cli and type "npm start" to run the program.
 
-[Click here to watch instalation and demo video](./assets/videos/employee-tracker-demo.mp4)
+[Click here to watch instalation and demo video](./assets/videos/employee-tracker-demo-2.mp4)
 
   ## Usage
 
